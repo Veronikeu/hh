@@ -1,0 +1,145 @@
+@page "{id:int?}"
+@using Практика.Models
+@model Практика.Pages.Vacancies.EditModel
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="page-head">
+    <div>
+        <h1>@Model.Title</h1>
+        <p class="hint">Требования вакансии используются при подборе подходящих кандидатов.</p>
+    </div>
+    <div class="table-actions">
+        @if (!Model.IsNew)
+        {
+            <a class="btn btn--accent" asp-page="/Vacancies/Match" asp-route-id="@Model.Item.Id">Подобрать кандидатов</a>
+        }
+        <a class="btn" asp-page="/Vacancies/Index">К списку вакансий</a>
+    </div>
+</div>
+
+<form method="post">
+    <input type="hidden" asp-for="Item.Id" />
+    <input type="hidden" asp-for="Item.CreatedAt" />
+
+    <div asp-validation-summary="All" class="validation-summary"></div>
+
+    <div class="card">
+        <h2>Описание вакансии</h2>
+        <div class="form-grid">
+            <div class="field">
+                <label asp-for="Item.CompanyId">Компания *</label>
+                <select asp-for="Item.CompanyId">
+                    <option value="">— выберите компанию —</option>
+                    @foreach (var company in Model.Companies)
+                    {
+                        <option value="@company.Id">@company.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="Item.CompanyId" class="field-error"></span>
+            </div>
+
+            <div class="field">
+                <label asp-for="Item.Title">Название вакансии *</label>
+                <input asp-for="Item.Title" placeholder="Разработчик C#" />
+                <span asp-validation-for="Item.Title" class="field-error"></span>
+            </div>
+
+            <div class="field">
+                <label asp-for="Item.Status">Статус вакансии</label>
+                <select asp-for="Item.Status">
+                    @foreach (var status in Reference.VacancyStatuses)
+                    {
+                        <option value="@status.Key">@status.Value</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="field" style="margin-top:14px">
+            <label asp-for="Item.Description">Описание</label>
+            <textarea asp-for="Item.Description" placeholder="Обязанности, условия работы"></textarea>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Требования к кандидату</h2>
+        <div class="form-grid">
+            <div class="field">
+                <label asp-for="Item.SalaryMin">Зарплата от, ₽</label>
+                <input asp-for="Item.SalaryMin" type="number" min="0" step="1000" />
+                <span asp-validation-for="Item.SalaryMin" class="field-error"></span>
+            </div>
+
+            <div class="field">
+                <label asp-for="Item.SalaryMax">Зарплата до, ₽</label>
+                <input asp-for="Item.SalaryMax" type="number" min="0" step="1000" />
+                <span asp-validation-for="Item.SalaryMax" class="field-error"></span>
+            </div>
+
+            <div class="field">
+                <label asp-for="Item.WorkFormat">Формат работы</label>
+                <select asp-for="Item.WorkFormat">
+                    <option value="">— не важно —</option>
+                    @foreach (var item in Reference.WorkFormats)
+                    {
+                        <option value="@item">@item</option>
+                    }
+                </select>
+            </div>
+
+            <div class="field">
+                <label asp-for="Item.RequiredExperience">Требуемый опыт</label>
+                <select asp-for="Item.RequiredExperience">
+                    <option value="">— не важно —</option>
+                    @foreach (var item in Reference.Experiences)
+                    {
+                        <option value="@item">@item</option>
+                    }
+                </select>
+            </div>
+
+            <div class="field">
+                <label asp-for="Item.RequiredAgeMin">Возраст от</label>
+                <input asp-for="Item.RequiredAgeMin" type="number" min="14" max="100" />
+                <span asp-validation-for="Item.RequiredAgeMin" class="field-error"></span>
+            </div>
+
+            <div class="field">
+                <label asp-for="Item.RequiredAgeMax">Возраст до</label>
+                <input asp-for="Item.RequiredAgeMax" type="number" min="14" max="100" />
+                <span asp-validation-for="Item.RequiredAgeMax" class="field-error"></span>
+            </div>
+
+            <div class="field">
+                <label asp-for="Item.RequiredGender">Требуемый пол</label>
+                <select asp-for="Item.RequiredGender">
+                    @foreach (var gender in Reference.GendersWithAny)
+                    {
+                        <option value="@gender">@gender</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="field" style="margin-top:14px">
+            <label>Требуемые навыки</label>
+            <div class="checkbox-list">
+                @foreach (var skill in Model.AllSkills)
+                {
+                    <label>
+                        <input type="checkbox" name="SelectedSkillIds" value="@skill.Id"
+                               checked="@Model.SelectedSkillIds.Contains(skill.Id)" />
+                        @skill.Name
+                    </label>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn--primary">Сохранить</button>
+        <a class="btn" asp-page="/Vacancies/Index">Отмена</a>
+    </div>
+</form>

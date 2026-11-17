@@ -1,0 +1,65 @@
+@page
+@model Практика.Pages.Companies.IndexModel
+@{
+    ViewData["Title"] = "Компании";
+}
+
+<div class="page-head">
+    <div>
+        <h1>Компании</h1>
+        <p class="hint">Организации, размещающие вакансии.</p>
+    </div>
+    <a class="btn btn--primary" asp-page="/Companies/Edit">Добавить компанию</a>
+</div>
+
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Сфера деятельности</th>
+                <th>Город</th>
+                <th>Телефон</th>
+                <th>Email</th>
+                <th>Сайт</th>
+                <th>Вакансий</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Items.Count == 0)
+            {
+                <tr>
+                    <td colspan="8"><div class="empty">Компании ещё не добавлены.</div></td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var company in Model.Items)
+                {
+                    <tr>
+                        <td><b>@company.Name</b></td>
+                        <td>@(company.Industry ?? "—")</td>
+                        <td>@(company.City ?? "—")</td>
+                        <td>@(company.Phone ?? "—")</td>
+                        <td>@(company.Email ?? "—")</td>
+                        <td>@(company.Website ?? "—")</td>
+                        <td>@(Model.VacancyCounts.TryGetValue(company.Id, out var count) ? count : 0)</td>
+                        <td>
+                            <div class="table-actions">
+                                <a class="btn btn--small" asp-page="/Companies/Edit" asp-route-id="@company.Id">Изменить</a>
+                                @if (Model.IsAdmin)
+                                {
+                                    <form method="post" asp-page-handler="Delete" asp-route-id="@company.Id"
+                                          data-confirm="Удалить компанию «@company.Name»? Все её вакансии и отклики также будут удалены.">
+                                        <button type="submit" class="btn btn--small btn--danger">Удалить</button>
+                                    </form>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

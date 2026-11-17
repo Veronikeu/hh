@@ -1,0 +1,37 @@
+@page
+@model Практика.Pages.RegisterModel
+@{
+    ViewData["Title"] = "Регистрация пользователя";
+    Layout = "_AuthLayout";
+}
+
+<div class="auth__box">
+    <div class="auth__logo">🌼</div>
+    <h1 class="auth__title">Регистрация</h1>
+    <p class="auth__subtitle">Новая учётная запись менеджера по подбору персонала</p>
+
+    <form method="post">
+        <div asp-validation-summary="All" class="validation-summary"></div>
+
+        <div class="auth__field">
+            <label asp-for="Fio">ФИО</label>
+            <input asp-for="Fio" placeholder="Иванова Мария Петровна" autofocus />
+        </div>
+
+        <div class="auth__field">
+            <label asp-for="Login">Логин</label>
+            <input asp-for="Login" placeholder="m.ivanova" />
+        </div>
+
+        <div class="auth__field">
+            <label asp-for="Password">Пароль</label>
+            <input asp-for="Password" type="password" placeholder="Не менее 6 символов, буквы и цифры" />
+        </div>
+
+        <button type="submit" class="btn btn--primary auth__submit">Зарегистрировать</button>
+
+        <hr class="auth__divider" />
+
+        <a class="btn auth__submit" asp-page="/Login">Вернуться ко входу</a>
+    </form>
+</div>

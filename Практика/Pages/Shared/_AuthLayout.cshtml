@@ -1,0 +1,27 @@
+@using System.Text.Json
+@using Практика.Services
+@{
+    var toasts = Toast.Take(TempData);
+}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — Подбор кандидатов</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body data-authenticated="false">
+
+    <div class="auth">
+        @RenderBody()
+    </div>
+
+    <div class="toast-area"></div>
+    <script type="application/json" id="server-toasts">@Html.Raw(JsonSerializer.Serialize(
+        toasts.Select(t => new { type = t.Type, title = t.Title, text = t.Text })))</script>
+
+    <script src="~/js/toast.js" asp-append-version="true"></script>
+    <script src="~/js/app.js" asp-append-version="true"></script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+@page "{id:int?}"
+@model Практика.Pages.Companies.EditModel
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="page-head">
+    <div>
+        <h1>@Model.Title</h1>
+    </div>
+    <a class="btn" asp-page="/Companies/Index">К списку компаний</a>
+</div>
+
+<form method="post">
+    <input type="hidden" asp-for="Item.Id" />
+
+    <div asp-validation-summary="All" class="validation-summary"></div>
+
+    <div class="card">
+        <div class="form-grid">
+            <div class="field">
+                <label asp-for="Item.Name">Название компании *</label>
+                <input asp-for="Item.Name" placeholder="ООО «Ромашка»" />
+                <span asp-validation-for="Item.Name" class="field-error"></span>
+            </div>
+
+            <div class="field">
+                <label asp-for="Item.Industry">Сфера деятельности</label>
+                <input asp-for="Item.Industry" placeholder="Информационные технологии" />
+            </div>
+
+            <div class="field">
+                <label asp-for="Item.City">Город</label>
+                <input asp-for="Item.City" placeholder="Екатеринбург" />
+            </div>
+
+            <div class="field">
+                <label asp-for="Item.Phone">Телефон</label>
+                <input asp-for="Item.Phone" type="tel" placeholder="+7 343 200-10-01" />
+                <span asp-validation-for="Item.Phone" class="field-error"></span>
+            </div>
+
+            <div class="field">
+                <label asp-for="Item.Email">Email</label>
+                <input asp-for="Item.Email" type="email" placeholder="hr@company.ru" />
+                <span asp-validation-for="Item.Email" class="field-error"></span>
+            </div>
+
+            <div class="field">
+                <label asp-for="Item.Website">Сайт</label>
+                <input asp-for="Item.Website" placeholder="company.ru" />
+            </div>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn--primary">Сохранить</button>
+        <a class="btn" asp-page="/Companies/Index">Отмена</a>
+    </div>
+</form>

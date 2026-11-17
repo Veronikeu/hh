@@ -1,0 +1,186 @@
+@page "{id:int?}"
+@using Практика.Models
+@model Практика.Pages.Candidates.EditModel
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="page-head">
+    <div>
+        <h1>@Model.Title</h1>
+        <p class="hint">Поля, отмеченные как обязательные, должны быть заполнены до сохранения.</p>
+    </div>
+    <a class="btn" asp-page="/Candidates/Index">К списку кандидатов</a>
+</div>
+
+<form method="post">
+    <input type="hidden" asp-for="Item.Id" />
+    <input type="hidden" asp-for="Item.CreatedAt" />
+
+    <div asp-validation-summary="All" class="validation-summary"></div>
+
+    <div class="card">
+        <h2>Основные сведения</h2>
+        <div class="form-grid">
+            <div class="field">
+                <label asp-for="Item.Fio">ФИО *</label>
+                <input asp-for="Item.Fio" placeholder="Иванов Иван Иванович" />
+                <span asp-validation-for="Item.Fio" class="field-error"></span>
+            </div>
+
+            <div class="field">
+                <label asp-for="Item.Age">Возраст</label>
+                <input asp-for="Item.Age" type="number" min="14" max="100" />
+                <span asp-validation-for="Item.Age" class="field-error"></span>
+            </div>
+
+            <div class="field">
+                <label asp-for="Item.Gender">Пол</label>
+                <select asp-for="Item.Gender">
+                    <option value="">— не указан —</option>
+                    @foreach (var gender in Reference.Genders)
+                    {
+                        <option value="@gender">@gender</option>
+                    }
+                </select>
+            </div>
+
+            <div class="field">
+                <label asp-for="Item.City">Город</label>
+                <input asp-for="Item.City" placeholder="Екатеринбург" />
+            </div>
+
+            <div class="field">
+                <label asp-for="Item.Phone">Телефон</label>
+                <input asp-for="Item.Phone" type="tel" placeholder="+7 900 123-45-67" />
+                <span asp-validation-for="Item.Phone" class="field-error"></span>
+            </div>
+
+            <div class="field">
+                <label asp-for="Item.Email">Email</label>
+                <input asp-for="Item.Email" type="email" placeholder="ivanov@mail.ru" />
+                <span asp-validation-for="Item.Email" class="field-error"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Профессиональные данные</h2>
+        <div class="form-grid">
+            <div class="field">
+                <label asp-for="Item.Experience">Опыт работы</label>
+                <select asp-for="Item.Experience">
+                    <option value="">— не указан —</option>
+                    @foreach (var item in Reference.Experiences)
+                    {
+                        <option value="@item">@item</option>
+                    }
+                </select>
+            </div>
+
+            <div class="field">
+                <label asp-for="Item.WorkFormat">Предпочтительный формат работы</label>
+                <select asp-for="Item.WorkFormat">
+                    <option value="">— не указан —</option>
+                    @foreach (var item in Reference.WorkFormats)
+                    {
+                        <option value="@item">@item</option>
+                    }
+                </select>
+            </div>
+
+            <div class="field">
+                <label asp-for="Item.Salary">Ожидаемая зарплата, ₽ *</label>
+                <input asp-for="Item.Salary" type="number" min="0" step="1000" />
+                <span asp-validation-for="Item.Salary" class="field-error"></span>
+            </div>
+
+            <div class="field">
+                <label asp-for="Item.PcLevel">Уровень владения ПК</label>
+                <select asp-for="Item.PcLevel">
+                    <option value="">— не указан —</option>
+                    @foreach (var item in Reference.PcLevels)
+                    {
+                        <option value="@item">@item</option>
+                    }
+                </select>
+            </div>
+
+            <div class="field">
+                <label asp-for="Item.Language">Иностранный язык</label>
+                <select asp-for="Item.Language">
+                    <option value="">— не указан —</option>
+                    @foreach (var item in Reference.Languages)
+                    {
+                        <option value="@item">@item</option>
+                    }
+                </select>
+            </div>
+
+            <div class="field">
+                <label asp-for="Item.TeamManagement">Опыт управления командой</label>
+                <select asp-for="Item.TeamManagement">
+                    <option value="">— не указан —</option>
+                    @foreach (var item in Reference.YesNo)
+                    {
+                        <option value="@item">@item</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="field" style="margin-top:14px">
+            <label>Навыки</label>
+            <div class="checkbox-list">
+                @foreach (var skill in Model.AllSkills)
+                {
+                    <label>
+                        <input type="checkbox" name="SelectedSkillIds" value="@skill.Id"
+                               checked="@Model.SelectedSkillIds.Contains(skill.Id)" />
+                        @skill.Name
+                    </label>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Образование</h2>
+        <p class="hint">Заполните нужное количество строк, лишние можно оставить пустыми.</p>
+
+        @for (var i = 0; i < Model.Educations.Count; i++)
+        {
+            <div class="form-grid" style="margin-bottom:12px">
+                <div class="field">
+                    <label>Учебное заведение</label>
+                    <input asp-for="Educations[i].Institution" placeholder="УрТИСИ СибГУТИ" />
+                    <span asp-validation-for="Educations[i].Institution" class="field-error"></span>
+                </div>
+                <div class="field">
+                    <label>Специальность</label>
+                    <input asp-for="Educations[i].Specialty" placeholder="Информационные системы" />
+                </div>
+                <div class="field">
+                    <label>Уровень образования</label>
+                    <select asp-for="Educations[i].Degree">
+                        <option value="">— не указан —</option>
+                        @foreach (var degree in Reference.Degrees)
+                        {
+                            <option value="@degree">@degree</option>
+                        }
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Год окончания</label>
+                    <input asp-for="Educations[i].YearEnd" type="number" min="1950" max="2100" />
+                    <span asp-validation-for="Educations[i].YearEnd" class="field-error"></span>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn--primary">Сохранить</button>
+        <a class="btn" asp-page="/Candidates/Index">Отмена</a>
+    </div>
+</form>

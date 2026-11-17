@@ -1,0 +1,19 @@
+@page
+@model ErrorModel
+@{
+    ViewData["Title"] = "Ошибка";
+    Layout = "_AuthLayout";
+}
+
+<div class="auth__box">
+    <div class="auth__logo">⚠</div>
+    <h1 class="auth__title">Произошла ошибка</h1>
+    <p class="auth__subtitle">Не удалось обработать запрос. Попробуйте повторить действие.</p>
+
+    @if (Model.ShowRequestId)
+    {
+        <p class="hint">Код запроса: <code>@Model.RequestId</code></p>
+    }
+
+    <a class="btn btn--primary auth__submit" asp-page="/Index">Вернуться в приложение</a>
+</div>

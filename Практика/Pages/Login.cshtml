@@ -1,0 +1,32 @@
+@page
+@model Практика.Pages.LoginModel
+@{
+    ViewData["Title"] = "Вход в систему";
+    Layout = "_AuthLayout";
+}
+
+<div class="auth__box">
+    <div class="auth__logo">🌷</div>
+    <h1 class="auth__title">Подбор кандидатов</h1>
+    <p class="auth__subtitle">Информационная система отдела персонала</p>
+
+    <form method="post">
+        <div asp-validation-summary="All" class="validation-summary"></div>
+
+        <div class="auth__field">
+            <label asp-for="Identifier">Логин</label>
+            <input asp-for="Identifier" type="text" placeholder="admin" autofocus />
+        </div>
+
+        <div class="auth__field">
+            <label asp-for="Password">Пароль</label>
+            <input asp-for="Password" type="password" placeholder="Введите пароль" />
+        </div>
+
+        <button type="submit" class="btn btn--primary auth__submit">Войти</button>
+
+        <hr class="auth__divider" />
+
+        <a class="btn auth__submit" asp-page="/Register">Зарегистрировать пользователя</a>
+    </form>
+</div>

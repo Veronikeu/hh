@@ -1,0 +1,109 @@
+@page
+@using Практика.Models
+@model Практика.Pages.Applications.IndexModel
+@{
+    ViewData["Title"] = "Отклики";
+}
+
+<div class="page-head">
+    <div>
+        <h1>Отклики кандидатов</h1>
+        <p class="hint">Этапы: Новый → На рассмотрении → Собеседование → Принят или Отклонён.</p>
+    </div>
+</div>
+
+<form method="get" class="card card--yellow">
+    <div class="form-grid">
+        <div class="field">
+            <label asp-for="VacancyId">Вакансия</label>
+            <select asp-for="VacancyId">
+                <option value="">— любая —</option>
+                @foreach (var vacancy in Model.Vacancies)
+                {
+                    <option value="@vacancy.Id">@vacancy.Title</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn--primary">Показать</button>
+        <a class="btn" asp-page="/Applications/Index">Сбросить фильтры</a>
+    </div>
+</form>
+
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>Кандидат</th>
+                <th>Контакты</th>
+                <th>Вакансия</th>
+                <th>Компания</th>
+                <th>Дата отклика</th>
+                <th>Текущий статус</th>
+                <th>Изменить статус</th>
+                @if (Model.IsAdmin)
+                {
+                    <th>Действия</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Items.Count == 0)
+            {
+                <tr>
+                    <td colspan="@(Model.IsAdmin ? 8 : 7)">
+                        <div class="empty">Отклики не найдены.</div>
+                    </td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var application in Model.Items)
+                {
+                    <tr>
+                        <td><b>@application.Candidate?.Fio</b></td>
+                        <td>
+                            @application.Candidate?.Phone
+                            <div class="hint">@application.Candidate?.Email</div>
+                        </td>
+                        <td>@application.Vacancy?.Title</td>
+                        <td>@application.Vacancy?.Company?.Name</td>
+                        <td>
+                            @application.AppliedAt.ToString("dd.MM.yyyy HH:mm")
+                            @if (application.UpdatedAt != application.AppliedAt)
+                            {
+                                <div class="hint">изменён @application.UpdatedAt.ToString("dd.MM.yyyy HH:mm")</div>
+                            }
+                        </td>
+                        <td>
+                            <span class="status status--@application.Status">@application.StatusName</span>
+                        </td>
+                        <td>
+                            <form method="post" asp-page-handler="ChangeStatus" asp-route-id="@application.Id"
+                                  class="table-actions">
+                                <select name="newStatus">
+                                    @foreach (var status in ApplicationStatuses.All)
+                                    {
+                                        <option value="@status.Key" selected="@(status.Key == application.Status)">@status.Value</option>
+                                    }
+                                </select>
+                                <button type="submit" class="btn btn--small btn--primary">Применить</button>
+                            </form>
+                        </td>
+                        @if (Model.IsAdmin)
+                        {
+                            <td>
+                                <form method="post" asp-page-handler="Delete" asp-route-id="@application.Id"
+                                      data-confirm="Удалить отклик кандидата «@application.Candidate?.Fio»?">
+                                    <button type="submit" class="btn btn--small btn--danger">Удалить</button>
+                                </form>
+                            </td>
+                        }
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

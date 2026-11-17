@@ -1,0 +1,119 @@
+@page "{id:int}"
+@model Практика.Pages.Vacancies.MatchModel
+@{
+    ViewData["Title"] = "Подбор кандидатов";
+    var vacancy = Model.Vacancy!;
+}
+
+<div class="page-head">
+    <div>
+        <h1>Подбор кандидатов</h1>
+        <p class="hint">Вакансия «@vacancy.Title», @vacancy.Company?.Name</p>
+    </div>
+</div>
+
+<div class="card card--green">
+    <h2>Требования вакансии</h2>
+    <div class="form-grid">
+        <div><b>Зарплата:</b> @vacancy.SalaryText</div>
+        <div><b>Формат работы:</b> @(vacancy.WorkFormat ?? "не важно")</div>
+        <div><b>Требуемый опыт:</b> @(vacancy.RequiredExperience ?? "не важно")</div>
+        <div>
+            <b>Возраст:</b>
+            @if (vacancy.RequiredAgeMin.HasValue || vacancy.RequiredAgeMax.HasValue)
+            {
+                @($"{vacancy.RequiredAgeMin?.ToString() ?? "—"} – {vacancy.RequiredAgeMax?.ToString() ?? "—"}")
+            }
+            else
+            {
+                @("не важно")
+            }
+        </div>
+        <div><b>Пол:</b> @(string.IsNullOrEmpty(vacancy.RequiredGender) ? "любой" : vacancy.RequiredGender)</div>
+        <div>
+            <b>Навыки:</b>
+            @if (vacancy.VacancySkills.Count == 0)
+            {
+                @("не заданы")
+            }
+            else
+            {
+                foreach (var link in vacancy.VacancySkills)
+                {
+                    <span class="tag">@link.Skill?.Name</span>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>ФИО</th>
+                <th>Возраст</th>
+                <th>Пол</th>
+                <th>Город</th>
+                <th>Опыт</th>
+                <th>Формат</th>
+                <th>Ожидания по зарплате</th>
+                <th>Навыки</th>
+                <th>Контакты</th>
+                <th>Действие</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Matches.Count == 0)
+            {
+                <tr>
+                    <td colspan="10">
+                        <div class="empty">
+                            Подходящих кандидатов не найдено.<br />
+                            Попробуйте смягчить требования вакансии или расширить условия подбора.
+                        </div>
+                    </td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var candidate in Model.Matches)
+                {
+                    var applied = Model.AlreadyApplied.Contains(candidate.Id);
+                    <tr>
+                        <td><b>@candidate.Fio</b></td>
+                        <td>@(candidate.Age?.ToString() ?? "—")</td>
+                        <td>@(candidate.Gender ?? "—")</td>
+                        <td>@(candidate.City ?? "—")</td>
+                        <td>@(candidate.Experience ?? "—")</td>
+                        <td>@(candidate.WorkFormat ?? "—")</td>
+                        <td>@(candidate.Salary.HasValue ? $"{candidate.Salary:N0} ₽" : "—")</td>
+                        <td>
+                            @foreach (var link in candidate.CandidateSkills)
+                            {
+                                <span class="tag">@link.Skill?.Name</span>
+                            }
+                        </td>
+                        <td>
+                            @candidate.Phone
+                            <div class="hint">@candidate.Email</div>
+                        </td>
+                        <td>
+                            @if (applied)
+                            {
+                                <span class="status status--review">Отклик создан</span>
+                            }
+                            else
+                            {
+                                <form method="post" asp-page-handler="Apply"
+                                      asp-route-id="@vacancy.Id" asp-route-candidateId="@candidate.Id">
+                                    <button type="submit" class="btn btn--small btn--primary">Создать отклик</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

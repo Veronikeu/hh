@@ -1,0 +1,66 @@
+@using System.Text.Json
+@using Практика.Models
+@using Практика.Services
+@{
+    var user = User.Identity?.IsAuthenticated == true ? User : null;
+    var isAdmin = User.IsInRole(Roles.Admin);
+    var fio = User.FindFirst("Fio")?.Value ?? User.Identity?.Name ?? "";
+    var roleName = isAdmin ? "Администратор" : "Менеджер по подбору";
+
+    var toasts = Toast.Take(TempData);
+    var currentPage = ViewContext.RouteData.Values["page"]?.ToString() ?? "";
+
+    string NavClass(string page) =>
+        currentPage.StartsWith(page, StringComparison.OrdinalIgnoreCase)
+            ? "nav__link nav__link--active"
+            : "nav__link";
+}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — Подбор кандидатов</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body data-authenticated="@(user != null ? "true" : "false")">
+
+    <header class="header">
+        <div>
+            <p class="header__title">Система подбора кандидатов на вакантные должности</p>
+        </div>
+        <div class="header__user">
+            <span class="header__user-name">@fio</span>
+            <span class="header__role @(isAdmin ? "header__role--admin" : "")">@roleName</span>
+            <form method="post" asp-page="/Logout">
+                <button type="submit" class="btn btn--small">Выйти</button>
+            </form>
+        </div>
+    </header>
+
+    <nav class="nav">
+        <a class="@NavClass("/Candidates")" asp-page="/Candidates/Index">Кандидаты</a>
+        <a class="@NavClass("/Vacancies")" asp-page="/Vacancies/Index">Вакансии</a>
+        <a class="@NavClass("/Applications")" asp-page="/Applications/Index">Отклики</a>
+        <a class="@NavClass("/Companies")" asp-page="/Companies/Index">Компании</a>
+        @if (isAdmin)
+        {
+            <a class="@NavClass("/Users")" asp-page="/Users/Index">Пользователи</a>
+            <a class="@NavClass("/Log")" asp-page="/Log/Index">Журнал действий</a>
+        }
+    </nav>
+
+    <main class="main">
+        @RenderBody()
+    </main>
+
+    <!-- Область всплывающих уведомлений -->
+    <div class="toast-area"></div>
+    <script type="application/json" id="server-toasts">@Html.Raw(JsonSerializer.Serialize(
+        toasts.Select(t => new { type = t.Type, title = t.Title, text = t.Text })))</script>
+
+    <script src="~/js/toast.js" asp-append-version="true"></script>
+    <script src="~/js/app.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
